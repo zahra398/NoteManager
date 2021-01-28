@@ -1,11 +1,24 @@
 from flask import Flask, render_template, request
 import pymongo
+import os
+from flask_pymongo import PyMongo
 app=Flask(__name__)
-file=open("connectionstring.txt",'r')
-connectionstring=file.read().strip()
-client=pymongo.MongoClient(connectionstring)   #connecting to mongo db atlas cluster
-database=client["notemanager"]   #notemanager is the database and we are connecting to it
-mycollection=database["notes"]  #notes is a collection and we are connecting to it
+#we are searching for a dictionary called os.environ, "MONGO_URI" is a key that might exist in this dictionary and its value is supposed to be the connection string
+#"MONGO_URI" exists on heroku because we have added it manually before deploying the app, it does not exist locally because we haven't added it
+#if we are searching for the dictionary and None is printed (it is local), connectionstring.txt (where the connection string is stored) must be opened and read
+#
+print("hello")
+var=os.environ.get("MONGO_URI")
+print(os.environ.get("MONGO_URI"))
+print("hello")
+if var==None:
+    file=open("connectionstring.txt",'r')
+    connectionstring=file.read().strip()
+    app.config["MONGO_URI"]=connectionstring
+else:
+    app.config["MONGO_URI"]=os.environ.get("MONGO_URI")
+mongo=PyMongo(app)
+
 
 
 
@@ -17,7 +30,7 @@ def insertnotes():
         name=request.form["namebox"]
         note=request.form["notebox"]
         notes={"name":name,"note":note}
-        mycollection.insert_one(notes)
+        mongo.db.notes.insert_one(notes)
         return("Note created")
 
 
@@ -29,7 +42,7 @@ def insertnotes():
 @app.route("/show_notes")
 def shownotes():
     allnotes={}
-    notes=mycollection.find()
+    notes=mongo.db.notes.find()
     for var in notes:
         allnotes[var["name"]]=var["note"]
     return render_template("show_notes.html",allnotes=allnotes)
