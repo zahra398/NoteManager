@@ -1,1 +1,4 @@
 connectionstring.txt
+venv/
+.idea/
+__pycache__/

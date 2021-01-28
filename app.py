@@ -7,10 +7,9 @@ app=Flask(__name__)
 #"MONGO_URI" exists on heroku because we have added it manually before deploying the app, it does not exist locally because we haven't added it
 #if we are searching for the dictionary and None is printed (it is local), connectionstring.txt (where the connection string is stored) must be opened and read
 #
-print("hello")
+
 var=os.environ.get("MONGO_URI")
 print(os.environ.get("MONGO_URI"))
-print("hello")
 if var==None:
     file=open("connectionstring.txt",'r')
     connectionstring=file.read().strip()
