@@ -18,13 +18,16 @@ else:
     app.config["MONGO_URI"]=os.environ.get("MONGO_URI")
 mongo=PyMongo(app)
 
-
+@app.route("/")
+def index():
+    return render_template("index.html")
+    
 
 
 @app.route("/insert_notes",methods=["GET","POST"])
 def insertnotes():
     if request.method=="GET":
-        return render_template("index.html")
+        return render_template("insertnotes.html")
     else:
         name=request.form["namebox"]
         note=request.form["notebox"]
